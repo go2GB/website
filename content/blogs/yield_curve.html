@@ -10,8 +10,8 @@ description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis mag
 draft: false
 image: pic08.jpg
 keywords: ""
-slug: inflation
-title: Inflation
+slug: yield_curve
+title: Yield Curve Inversion
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
@@ -116,7 +116,7 @@ ggplot() +
   ) +
   theme(plot.title = element_text(face = &quot;bold&quot;))+
   scale_x_date(date_breaks = &quot;2 years&quot;, labels = date_format(&quot;%Y&quot;), limits = c(as.Date(&quot;1960-12-01&quot;), as.Date(&quot;2021-01-01&quot;)))</code></pre>
-<p><img src="/blogs/2021-10-20-inflation/Inflation_files/figure-html/unnamed-chunk-1-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/yield_curve_files/figure-html/unnamed-chunk-1-1.png" width="1440" style="display: block; margin: auto;" /></p>
 <p>This may seem long but it should be easy to produce the following three plots</p>
 <div id="yields-on-us-rates-by-duration-since-1960" class="section level3">
 <h3>Yields on US rates by duration since 1960</h3>
@@ -154,7 +154,7 @@ yield_curve_new %&gt;%
     caption = &quot;Source: St.Louis Federal Reserve Economic Database (FRED)&quot;
   ) +
   theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="/blogs/2021-10-20-inflation/Inflation_files/figure-html/unnamed-chunk-2-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/yield_curve_files/figure-html/unnamed-chunk-2-1.png" width="1440" style="display: block; margin: auto;" /></p>
 </div>
 <div id="monthly-yields-on-us-rates-by-duration-since-1999-on-a-year-by-year-basis" class="section level3">
 <h3>Monthly yields on US rates by duration since 1999 on a year-by-year basis</h3>
@@ -198,7 +198,7 @@ yield_curve_new2 %&gt;%
     title = &quot;US Yield Curve&quot;,
     caption = &quot;Source: St. Louis Federal Reserve Economic Database (FRED)&quot;
   )</code></pre>
-<p><img src="/blogs/2021-10-20-inflation/Inflation_files/figure-html/unnamed-chunk-3-1.png" width="1248" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/yield_curve_files/figure-html/unnamed-chunk-3-1.png" width="1248" style="display: block; margin: auto;" /></p>
 </div>
 <div id="month-and-10-year-yields-since-1999" class="section level3">
 <h3>3-month and 10-year yields since 1999</h3>
@@ -208,19 +208,6 @@ yield_curve_new2 %&gt;%
   filter(year(Date) &gt;= 1999) %&gt;%
   mutate(Value.x = Value.x * 100, Value.y = Value.y * 100)
 
-#lgnd&lt;-c(&quot;a&quot;,&quot;b&quot;)
-
-#yield_3mAND10y%&gt;%
-#ggplot(aes(x=Date))+
-#  geom_line(aes(y=Value.x,colour=&quot;#A2D9CE&quot;,color=&quot;a&quot;))+
-#  geom_line(aes(y=Value.y,colour=&quot;#F1948A&quot;,color=&quot;b&quot;))+
-# theme_bw()+
-#   labs(
-#    title = &quot;Yields on 3 months and 10 years U.S. treasury since 1999&quot;,
-#    x = &quot;&quot;,
-#    y = &quot;%&quot;,
-#   caption=&quot;Source: St.Louis Federal Reserve Economic Database (FRED)&quot;,
-#   color=&quot;Legend&quot;)
 
 
 
@@ -247,7 +234,7 @@ yield_3mAND10y %&gt;%
     color = &quot;&quot;
   ) +
   scale_color_manual(values = cols)</code></pre>
-<p><img src="/blogs/2021-10-20-inflation/Inflation_files/figure-html/unnamed-chunk-4-1.png" width="1248" style="display: block; margin: auto;" /></p>
+<p><img src="/blogs/yield_curve_files/figure-html/unnamed-chunk-4-1.png" width="1248" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>

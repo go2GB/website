@@ -90,15 +90,15 @@ params:
         title: Career
         url: blogs/career
       - image: bike.jpeg
-        subtitle: Lorem Etiam Nullam
+        subtitle: 
         title: Brexit Vote Analysis
         url: blogs/brexit_vote
       - image: phy.jpeg
-        subtitle: Nisl Sed Aliquam
+        subtitle: 
         title: Ipsum
         url: blogs/ipsum
       - image: pic05.jpg
-        subtitle: Data driven analysis of Brexit results
+        subtitle: 
         title: Yield Curve Inversion
         url: blogs/yield_curve
       - image: pic06.jpg
