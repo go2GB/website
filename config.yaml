@@ -14,9 +14,9 @@ params:
   blog: {}
   contact:
     address:
-      - city: City, ST 00000
-        country: Country
-        street: Street
+      - city: London NW14SA
+        country: United Kingdom
+        street: Regent's Park
         title: Address
     buttonClear: Clear
     buttonSend: Send message
@@ -24,9 +24,9 @@ params:
       - email: gbassi.mfa2022@london.edu
         title: Email
     enable: yes
-    phone:
-      - phone: (000) 000-0000 x1234
-        title: Phone
+   # phone:
+      #- phone: (000) 000-0000 x1234
+       # title: Phone
   custom_css: []
   custom_js: []
   description: Your description
