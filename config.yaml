@@ -10,7 +10,7 @@ params:
     subtitle: |-
       A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP
       AND RELEASED UNDER THE CREATIVE COMMONS.
-    title: Hi, my name is Forty
+    title: Hi, my name is Guido
   blog: {}
   contact:
     address:
@@ -38,9 +38,9 @@ params:
     copyright: Company Name
     enable: yes
     quicklinks:
-      - alt: HTML5 UP
+      - alt: GB
         text: 'Design: '
-        url: https://www.html5up.net
+        url: https://www.linkedin.com/in/guidobassi/
     social:
      # - icon: fa-twitter
       #  label: Twitter
