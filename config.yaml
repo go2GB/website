@@ -35,7 +35,7 @@ params:
     text: Please visit [this page](/)
   favicon: favicon.ico
   footer:
-    copyright: Company Name
+    copyright: London Business School
     enable: yes
     quicklinks:
       - alt: GB
@@ -82,13 +82,13 @@ params:
     enable: yes
     showcase:
       - image: me.jpg
-        subtitle: Ipsum Dolor Sit Amet
-        title: Aliquam
-        url: blogs/aliquam
+        subtitle: 
+        title: About
+        url: blogs/about
       - image: lnda.gif
-        subtitle: Feugiat Amet Tempus
-        title: Tempus
-        url: blogs/tempus
+        subtitle: 
+        title: Career
+        url: blogs/career
       - image: bike.jpeg
         subtitle: Lorem Etiam Nullam
         title: Magna
