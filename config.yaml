@@ -102,9 +102,9 @@ params:
         title: Yield Curve Inversion
         url: blogs/yield_curve
       - image: pic06.jpg
-        subtitle: Feugiat Amet Tempus
-        title: Etiam
-        url: blogs/ipsum
+        subtitle: 
+        title: Is inflation here to stay?
+        url: blogs/inflation
   two:
     buttonText: Get Started
     enable: yes

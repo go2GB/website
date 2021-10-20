@@ -1,0 +1,169 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:09-05:00"
+description: Lorem Etiam Nullam
+draft: false
+image: pic08.jpg
+keywords: ""
+slug: inflation
+title: Is inflation here to stay?
+---
+
+```{r load-libraries, include=FALSE}
+library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(lubridate)
+library(here)
+library(skimr)
+library(janitor)
+library(httr)
+library(readxl)
+library(vroom)
+library(leaps)
+library(lubridate)
+library(rvest)
+```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+>> The goal of this analyisis is to understand how the CPI and its components have changed over the last few years, in particular in a post-pandemic era in which prices have been growing dramatically in certain sectors yoy. We want to understand how much this is based on the base effect while looking at the data to understand if some of these trends are here to stay.
+
+We will be following these steps:
+
+1.  You can find [CPI components at FRED](https://fredaccount.stlouisfed.org/public/datalist/843). You should adapt the code from German polls to scrape the FRED website and pull all of the CPI components into a vector. FIY, the list of components is the second table in that webpage.
+2.  Once you have a vector of components, you can then pass it to `tidyquant::tq_get(get = "economic.data", from =  "2000-01-01")` to get all data since January 1, 2000
+3.  Since the data you download is an index with various starting dates, you need to calculate the yearly, or 12-month change. To do this you need to use the `lag` function, and specifically, `year_change = value/lag(value, 12) - 1`; this means you are comparing the current month's value with that 12 months ago lag(value, 12).
+4.  I want you to order components so the higher the yearly change, the earlier does that component appear.
+5.  You should also make sure that the **All Items** CPI (CPIAUCSL) appears first.
+6.  Add a `geom_smooth()` for each component to get a sense of the overall trend. 1 You may want to colour the points according to whether yearly change was positive or negative.
+
+Having done this, you should get this graph.
+
+```{r cpi_all_components_since_2016, echo=FALSE, out.width="100%"}
+knitr::include_graphics(here::here("images", "cpi_components_since_2016.png"), error = FALSE)
+```
+
+
+```{r, fig.width=20, fig.height=10}
+
+url <- "https://fredaccount.stlouisfed.org/public/datalist/843"
+webpage <- read_html(url)
+tr <- html_nodes(webpage, 'tr')
+ans <- html_text(tr)
+title <- c()
+series_id <- c()
+for(i in 3:51){
+  tmp <- strsplit(ans[i], split="\n")
+  n_last <- nchar(tmp[[1]][2])
+  title <- append(title, substr(tmp[[1]][2], 71, n_last-21))
+  n_last <- nchar(tmp[[1]][5])
+  series_id <- append(series_id, substr(tmp[[1]][5],9,n_last))
+}
+title[2:5] <- title[1:4]
+title[1] <- "All Items"
+
+df <- tidyquant::tq_get(series_id, get="economic.data", from="2000-01-01")
+#load("/Users/guidobassi/Desktop/ca09.mfa2022/session04_workshop2/df")
+data <- rbind(df %>% filter(symbol=="CPIAUCSL")  ,df %>% filter(symbol!="CPIAUCSL")) %>%
+  mutate(yoy_change = price / lag(price, 12) - 1)
+  
+data$title <- ""
+k <- 1
+for(i in 1:nrow(data)){
+  if(i==1){
+    data$title[i] <- title[k]
+  }
+  else{
+    if(data$symbol[i] != data$symbol[i-1]){
+      k <- k + 1
+      data$title[i] <- title[k]
+    }
+    else{
+      data$title[i] <- title[k]
+    }
+  }
+}
+
+data_1 <- data %>% filter(date >= "2016-01-01") %>% 
+  filter(date <= "2021-08-01") # filtering the data so that we only have data for the period Jan 2016 - Aug 2021
+list_cpi_max <- aggregate(data_1[,4], list(data_1$title), max) # creating a list with the max yoy change per title
+list_cpi_max_ordered <- arrange(list_cpi_max, desc(yoy_change)) # ordering our list in descending order
+order_0 <- list_cpi_max_ordered[1:49, 1] # extracting the order our graphs will be in from the list
+new_order <- order_0[c(24,1:23,25:length(order_0))] # adjusting the order to have "all items" first
+
+
+
+geom_line(aes(y=rate),color = '#000000', size = 0.2)
+data_2 <- data_1 %>% group_by(title) 
+data$title <- factor(data$title, levels = title)
+
+ggplot(data_2 %>% filter(year(date) >= 2016), aes(date, yoy_change)) + 
+  geom_point(aes(colour = (price/lag(price,12) -1) < 0), size=1.5) + 
+  geom_smooth(method="loess", formula = y ~ x, size=1.5, se = FALSE, colour = "grey") + 
+  facet_wrap( ~ factor(title, levels = new_order),nrow=7,scales = "free") + 
+  scale_y_continuous(name = "YoY % Change") +
+  labs(title = "Yearly change of US CPI (All Items) and its components", 
+       subtitle = "YoY change being positive or negative \n Jan 2016 to Aug 2021", 
+       caption = "Data from St. Louls Fed FRED \n https://fredaccount.stlouisfed.org/public/datalist/843") +
+  theme(text = element_text(size = 7),
+        legend.position = "none",
+        axis.title.x=element_blank(),
+        strip.text = element_text(size = 10),
+      axis.text = element_text(size = 9),
+      plot.title = element_text(size = 15),
+      plot.subtitle = element_text(size = 12),
+      axis.title = element_text(size = 12),
+      plot.caption = element_text(size = 10))
+```
+
+This graphs is fine, but perhaps has too many sub-categories. You can find the [relative importance of components in the Consumer Price Indexes: U.S. city average, December 2020](https://www.bls.gov/cpi/tables/relative-importance/2020.htm) here. Can you choose a smaller subset of the components you have and only list the major categories (Housing, Transportation, Food and beverages, Medical care, Education and communication, Recreation, and Apparel), sorted according to their relative importance?
+
+
+**Interestingly, we see how inflation is driven by certain categories of products such as used cars, gasoline or motor fuel which are very much correlated with industries that suffered the most during the pandemic and so picked up quite substantially thereafter.**
+
+```{r}
+url_new <- "https://www.bls.gov/cpi/tables/relative-importance/2020.htm"
+
+# importing data relative to the importance of cpi components
+# https://www.rdocumentation.org/packages/rvest/versions/0.3.6/topics/html_nodes
+# https://www.rdocumentation.org/packages/textreadr/versions/1.0.2/topics/read_html
+tables_new <- url_new %>%
+  read_html() %>% 
+  html_nodes(css="table")
+
+tables_new1 <- map(tables_new, . %>% 
+             html_table()%>% 
+            clean_names())
+#names(tables_new1 )
+
+# ranking CPI components using slice
+cpi_subset <- tables_new1[[1]] %>%
+  slice(2:n()) %>%
+  subset(item_and_group =="Transportation"|item_and_group =="Food and beverages"|item_and_group =="Medical care"|item_and_group =="Education and communication"|item_and_group =="Recreation"|item_and_group =="Apparel" | item_and_group == "Housing") %>%
+  mutate(across(where(is.character), str_trim)) %>%
+  transform(u_s_city_average = as.numeric(u_s_city_average)) %>%
+  arrange(desc(u_s_city_average)) 
+
+# selecting a subset of components of the cpi basket
+components <- data_2 %>%
+  subset(title  == "Transportation"|title  == "Food and Beverages"| title == "Housing")
+
+# The function factor is used to encode a vector as a factor in the variable title: the levels are given by the cpi components previously selected
+components$title  = factor(components$title , levels = c("Transportation","Food and Beverages","Housing"))
+
+
+components %>%
+  ggplot(aes(x = date, y = yoy_change, group = title )) +
+  facet_wrap(.~components$title , nrow=3)+
+  geom_point(aes(color = factor(sign(yoy_change))))+
+  geom_smooth(aes(color = "black"))+
+  theme_bw()+
+  theme(legend.position="none")+
+  labs(title = "Subset of CPI components", x = "year", y = "yoy change")
+```
+
+

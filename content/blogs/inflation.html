@@ -1,0 +1,296 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:09-05:00"
+description: Lorem Etiam Nullam
+draft: false
+image: pic08.jpg
+keywords: ""
+slug: inflation
+title: Is inflation here to stay?
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<blockquote>
+<blockquote>
+<p>The goal of this analyisis is to understand how the CPI and its components have changed over the last few years, in particular in a post-pandemic era in which prices have been growing dramatically in certain sectors yoy. We want to understand how much this is based on the base effect while looking at the data to understand if some of these trends are here to stay.</p>
+</blockquote>
+</blockquote>
+<p>We will be following these steps:</p>
+<ol style="list-style-type: decimal">
+<li>You can find <a href="https://fredaccount.stlouisfed.org/public/datalist/843">CPI components at FRED</a>. You should adapt the code from German polls to scrape the FRED website and pull all of the CPI components into a vector. FIY, the list of components is the second table in that webpage.</li>
+<li>Once you have a vector of components, you can then pass it to <code>tidyquant::tq_get(get = "economic.data", from =  "2000-01-01")</code> to get all data since January 1, 2000</li>
+<li>Since the data you download is an index with various starting dates, you need to calculate the yearly, or 12-month change. To do this you need to use the <code>lag</code> function, and specifically, <code>year_change = value/lag(value, 12) - 1</code>; this means you are comparing the current month’s value with that 12 months ago lag(value, 12).</li>
+<li>I want you to order components so the higher the yearly change, the earlier does that component appear.</li>
+<li>You should also make sure that the <strong>All Items</strong> CPI (CPIAUCSL) appears first.</li>
+<li>Add a <code>geom_smooth()</code> for each component to get a sense of the overall trend. 1 You may want to colour the points according to whether yearly change was positive or negative.</li>
+</ol>
+<p>Having done this, you should get this graph.</p>
+<p><img src="/Users/guidobassi/Desktop/website/images/cpi_components_since_2016.png" width="100%" /></p>
+<pre class="r"><code>url &lt;- &quot;https://fredaccount.stlouisfed.org/public/datalist/843&quot;
+webpage &lt;- read_html(url)
+tr &lt;- html_nodes(webpage, &#39;tr&#39;)
+ans &lt;- html_text(tr)
+title &lt;- c()
+series_id &lt;- c()
+for(i in 3:51){
+  tmp &lt;- strsplit(ans[i], split=&quot;\n&quot;)
+  n_last &lt;- nchar(tmp[[1]][2])
+  title &lt;- append(title, substr(tmp[[1]][2], 71, n_last-21))
+  n_last &lt;- nchar(tmp[[1]][5])
+  series_id &lt;- append(series_id, substr(tmp[[1]][5],9,n_last))
+}
+title[2:5] &lt;- title[1:4]
+title[1] &lt;- &quot;All Items&quot;
+
+df &lt;- tidyquant::tq_get(series_id, get=&quot;economic.data&quot;, from=&quot;2000-01-01&quot;)</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;quantmod&#39;:
+##   method            from
+##   as.zoo.data.frame zoo</code></pre>
+<pre><code>## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;
+
+## Warning: `type_convert()` only converts columns of type &#39;character&#39;.
+## - `df` has no columns of type &#39;character&#39;</code></pre>
+<pre class="r"><code>#load(&quot;/Users/guidobassi/Desktop/ca09.mfa2022/session04_workshop2/df&quot;)
+data &lt;- rbind(df %&gt;% filter(symbol==&quot;CPIAUCSL&quot;)  ,df %&gt;% filter(symbol!=&quot;CPIAUCSL&quot;)) %&gt;%
+  mutate(yoy_change = price / lag(price, 12) - 1)
+  
+data$title &lt;- &quot;&quot;
+k &lt;- 1
+for(i in 1:nrow(data)){
+  if(i==1){
+    data$title[i] &lt;- title[k]
+  }
+  else{
+    if(data$symbol[i] != data$symbol[i-1]){
+      k &lt;- k + 1
+      data$title[i] &lt;- title[k]
+    }
+    else{
+      data$title[i] &lt;- title[k]
+    }
+  }
+}
+
+data_1 &lt;- data %&gt;% filter(date &gt;= &quot;2016-01-01&quot;) %&gt;% 
+  filter(date &lt;= &quot;2021-08-01&quot;) # filtering the data so that we only have data for the period Jan 2016 - Aug 2021
+list_cpi_max &lt;- aggregate(data_1[,4], list(data_1$title), max) # creating a list with the max yoy change per title
+list_cpi_max_ordered &lt;- arrange(list_cpi_max, desc(yoy_change)) # ordering our list in descending order
+order_0 &lt;- list_cpi_max_ordered[1:49, 1] # extracting the order our graphs will be in from the list
+new_order &lt;- order_0[c(24,1:23,25:length(order_0))] # adjusting the order to have &quot;all items&quot; first
+
+
+
+geom_line(aes(y=rate),color = &#39;#000000&#39;, size = 0.2)</code></pre>
+<pre><code>## mapping: y = ~rate 
+## geom_line: na.rm = FALSE, orientation = NA
+## stat_identity: na.rm = FALSE
+## position_identity</code></pre>
+<pre class="r"><code>data_2 &lt;- data_1 %&gt;% group_by(title) 
+data$title &lt;- factor(data$title, levels = title)
+
+ggplot(data_2 %&gt;% filter(year(date) &gt;= 2016), aes(date, yoy_change)) + 
+  geom_point(aes(colour = (price/lag(price,12) -1) &lt; 0), size=1.5) + 
+  geom_smooth(method=&quot;loess&quot;, formula = y ~ x, size=1.5, se = FALSE, colour = &quot;grey&quot;) + 
+  facet_wrap( ~ factor(title, levels = new_order),nrow=7,scales = &quot;free&quot;) + 
+  scale_y_continuous(name = &quot;YoY % Change&quot;) +
+  labs(title = &quot;Yearly change of US CPI (All Items) and its components&quot;, 
+       subtitle = &quot;YoY change being positive or negative \n Jan 2016 to Aug 2021&quot;, 
+       caption = &quot;Data from St. Louls Fed FRED \n https://fredaccount.stlouisfed.org/public/datalist/843&quot;) +
+  theme(text = element_text(size = 7),
+        legend.position = &quot;none&quot;,
+        axis.title.x=element_blank(),
+        strip.text = element_text(size = 10),
+      axis.text = element_text(size = 9),
+      plot.title = element_text(size = 15),
+      plot.subtitle = element_text(size = 12),
+      axis.title = element_text(size = 12),
+      plot.caption = element_text(size = 10))</code></pre>
+<p><img src="/blogs/inflation_files/figure-html/unnamed-chunk-1-1.png" width="1920" /></p>
+<p>This graphs is fine, but perhaps has too many sub-categories. You can find the <a href="https://www.bls.gov/cpi/tables/relative-importance/2020.htm">relative importance of components in the Consumer Price Indexes: U.S. city average, December 2020</a> here. Can you choose a smaller subset of the components you have and only list the major categories (Housing, Transportation, Food and beverages, Medical care, Education and communication, Recreation, and Apparel), sorted according to their relative importance?</p>
+<p><strong>Interestingly, we see how inflation is driven by certain categories of products such as used cars, gasoline or motor fuel which are very much correlated with industries that suffered the most during the pandemic and so picked up quite substantially thereafter.</strong></p>
+<pre class="r"><code>url_new &lt;- &quot;https://www.bls.gov/cpi/tables/relative-importance/2020.htm&quot;
+
+# importing data relative to the importance of cpi components
+# https://www.rdocumentation.org/packages/rvest/versions/0.3.6/topics/html_nodes
+# https://www.rdocumentation.org/packages/textreadr/versions/1.0.2/topics/read_html
+tables_new &lt;- url_new %&gt;%
+  read_html() %&gt;% 
+  html_nodes(css=&quot;table&quot;)
+
+tables_new1 &lt;- map(tables_new, . %&gt;% 
+             html_table()%&gt;% 
+            clean_names())
+#names(tables_new1 )
+
+# ranking CPI components using slice
+cpi_subset &lt;- tables_new1[[1]] %&gt;%
+  slice(2:n()) %&gt;%
+  subset(item_and_group ==&quot;Transportation&quot;|item_and_group ==&quot;Food and beverages&quot;|item_and_group ==&quot;Medical care&quot;|item_and_group ==&quot;Education and communication&quot;|item_and_group ==&quot;Recreation&quot;|item_and_group ==&quot;Apparel&quot; | item_and_group == &quot;Housing&quot;) %&gt;%
+  mutate(across(where(is.character), str_trim)) %&gt;%
+  transform(u_s_city_average = as.numeric(u_s_city_average)) %&gt;%
+  arrange(desc(u_s_city_average)) 
+
+# selecting a subset of components of the cpi basket
+components &lt;- data_2 %&gt;%
+  subset(title  == &quot;Transportation&quot;|title  == &quot;Food and Beverages&quot;| title == &quot;Housing&quot;)
+
+# The function factor is used to encode a vector as a factor in the variable title: the levels are given by the cpi components previously selected
+components$title  = factor(components$title , levels = c(&quot;Transportation&quot;,&quot;Food and Beverages&quot;,&quot;Housing&quot;))
+
+
+components %&gt;%
+  ggplot(aes(x = date, y = yoy_change, group = title )) +
+  facet_wrap(.~components$title , nrow=3)+
+  geom_point(aes(color = factor(sign(yoy_change))))+
+  geom_smooth(aes(color = &quot;black&quot;))+
+  theme_bw()+
+  theme(legend.position=&quot;none&quot;)+
+  labs(title = &quot;Subset of CPI components&quot;, x = &quot;year&quot;, y = &quot;yoy change&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/blogs/inflation_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
