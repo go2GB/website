@@ -85,15 +85,15 @@ params:
         subtitle: Ipsum Dolor Sit Amet
         title: Aliquam
         url: blogs/aliquam
-      - image: lug.jpg
+      - image: lnda.gif
         subtitle: Feugiat Amet Tempus
         title: Tempus
         url: blogs/tempus
-      - image: lug.JPG
+      - image: bike.jpeg
         subtitle: Lorem Etiam Nullam
         title: Magna
         url: blogs/magna
-      - image: pic04.jpg
+      - image: phy.jpeg
         subtitle: Nisl Sed Aliquam
         title: Ipsum
         url: blogs/ipsum
