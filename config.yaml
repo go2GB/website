@@ -1,11 +1,11 @@
-baseURL: http://example.org/
+baseURL: https://guido-bassi.netlify.app/
 languageCode: en-us
 title: Forty
 theme: forty
 googleAnalytics: ''
 disqusShortname: ''
 params:
-  banner:
+  banner:lbs.jpg
     buttonText: Get Started
     subtitle: |-
       A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP
@@ -21,7 +21,7 @@ params:
     buttonClear: Clear
     buttonSend: Send message
     email:
-      - email: example@domain.com
+      - email: gbassi.mfa2022@london.edu
         title: Email
     enable: yes
     phone:
@@ -56,9 +56,9 @@ params:
         url: https://www.github.com
       - icon: fa-linkedin
         label: LinkedIn
-        url: https://www.linkedin.com
+        url: https://www.linkedin.com/in/guidobassi/
   image: ''
-  name: Your name
+  name: Guido
   navigation:
     button1:
       - name: Get Started
@@ -81,11 +81,11 @@ params:
   tiles:
     enable: yes
     showcase:
-      - image: pic01.jpg
+      - image: me.jpg
         subtitle: Ipsum Dolor Sit Amet
         title: Aliquam
         url: blogs/aliquam
-      - image: pic02.jpg
+      - image: lug.jpg
         subtitle: Feugiat Amet Tempus
         title: Tempus
         url: blogs/tempus
