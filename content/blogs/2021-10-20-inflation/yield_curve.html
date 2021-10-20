@@ -1,0 +1,240 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:13-05:00"
+description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna
+  sed nunc rhoncus condimentum sem. In efficitur ligula tate urna. Maecenas massa
+  sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem
+  consequat tincidunt. Vivamus et sagittis tempus.
+draft: false
+image: pic08.jpg
+keywords: ""
+slug: yield_curve
+title: Yield Curve Inversion
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="yield-curve-inversion" class="section level1">
+<h1>Yield Curve inversion</h1>
+<p>Every so often, we hear warnings from commentators on the “inverted yield curve” and its predictive power with respect to recessions. An explainer what a <a href="https://www.reuters.com/article/us-usa-economy-yieldcurve-explainer/explainer-what-is-an-inverted-yield-curve-idUSKBN1O50GA">inverted yield curve is can be found here</a>. If you’d rather listen to something, here is a great podcast from <a href="https://www.podbean.com/media/share/dir-4zgj9-6aefd11">NPR on yield curve indicators</a></p>
+<p>In addition, many articles and commentators think that, e.g., <a href="https://www.bloomberg.com/news/articles/2019-08-14/u-k-yield-curve-inverts-for-first-time-since-financial-crisis"><em>Yield curve inversion is viewed as a harbinger of recession</em></a>. One can always doubt whether inversions are truly a harbinger of recessions, and <a href="https://twitter.com/5_min_macro/status/1161627360946511873">use the attached parable on yield curve inversions</a>.</p>
+<p>In our case we will look at US data and use the <a href="https://fred.stlouisfed.org/">FRED database</a> to download historical yield curve rates, and plot the yield curves since 1999 to see when the yield curves flatten.</p>
+<div id="plotting-the-yield-curve" class="section level2">
+<h2>Plotting the yield curve</h2>
+<pre class="r"><code># get US recession dates after 1946 from Wikipedia 
+# https://en.wikipedia.org/wiki/List_of_recessions_in_the_United_States
+
+recessions &lt;- tibble(
+  from = c(&quot;1948-11-01&quot;, &quot;1953-07-01&quot;, &quot;1957-08-01&quot;, &quot;1960-04-01&quot;, &quot;1969-12-01&quot;, &quot;1973-11-01&quot;, &quot;1980-01-01&quot;,&quot;1981-07-01&quot;, &quot;1990-07-01&quot;, &quot;2001-03-01&quot;, &quot;2007-12-01&quot;,&quot;2020-02-01&quot;),  
+  to = c(&quot;1949-10-01&quot;, &quot;1954-05-01&quot;, &quot;1958-04-01&quot;, &quot;1961-02-01&quot;, &quot;1970-11-01&quot;, &quot;1975-03-01&quot;, &quot;1980-07-01&quot;, &quot;1982-11-01&quot;, &quot;1991-03-01&quot;, &quot;2001-11-01&quot;, &quot;2009-06-01&quot;, &quot;2020-04-30&quot;) 
+  )  %&gt;% 
+  mutate(From = ymd(from), 
+         To=ymd(to),
+         duration_days = To-From)
+
+
+recessions</code></pre>
+<pre><code>## # A tibble: 12 × 5
+##    from       to         From       To         duration_days
+##    &lt;chr&gt;      &lt;chr&gt;      &lt;date&gt;     &lt;date&gt;     &lt;drtn&gt;       
+##  1 1948-11-01 1949-10-01 1948-11-01 1949-10-01 334 days     
+##  2 1953-07-01 1954-05-01 1953-07-01 1954-05-01 304 days     
+##  3 1957-08-01 1958-04-01 1957-08-01 1958-04-01 243 days     
+##  4 1960-04-01 1961-02-01 1960-04-01 1961-02-01 306 days     
+##  5 1969-12-01 1970-11-01 1969-12-01 1970-11-01 335 days     
+##  6 1973-11-01 1975-03-01 1973-11-01 1975-03-01 485 days     
+##  7 1980-01-01 1980-07-01 1980-01-01 1980-07-01 182 days     
+##  8 1981-07-01 1982-11-01 1981-07-01 1982-11-01 488 days     
+##  9 1990-07-01 1991-03-01 1990-07-01 1991-03-01 243 days     
+## 10 2001-03-01 2001-11-01 2001-03-01 2001-11-01 245 days     
+## 11 2007-12-01 2009-06-01 2007-12-01 2009-06-01 548 days     
+## 12 2020-02-01 2020-04-30 2020-02-01 2020-04-30  89 days</code></pre>
+<pre class="r"><code>recessions59up&lt;-filter(recessions,year(from)&gt;1959)</code></pre>
+<pre class="r"><code>library(scales)
+drop_na(yield_curve, maturity)</code></pre>
+<pre><code>## # A tibble: 6,884 × 5
+##    date       series_id value maturity duration             
+##    &lt;date&gt;     &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;                
+##  1 1960-01-01 TB3MS      4.35 3m       3-Month Treasury Bill
+##  2 1960-02-01 TB3MS      3.96 3m       3-Month Treasury Bill
+##  3 1960-03-01 TB3MS      3.31 3m       3-Month Treasury Bill
+##  4 1960-04-01 TB3MS      3.23 3m       3-Month Treasury Bill
+##  5 1960-05-01 TB3MS      3.29 3m       3-Month Treasury Bill
+##  6 1960-06-01 TB3MS      2.46 3m       3-Month Treasury Bill
+##  7 1960-07-01 TB3MS      2.3  3m       3-Month Treasury Bill
+##  8 1960-08-01 TB3MS      2.3  3m       3-Month Treasury Bill
+##  9 1960-09-01 TB3MS      2.48 3m       3-Month Treasury Bill
+## 10 1960-10-01 TB3MS      2.3  3m       3-Month Treasury Bill
+## # … with 6,874 more rows</code></pre>
+<pre class="r"><code>yield_10y &lt;-
+  yield_curve %&gt;%
+  filter(duration == &quot;10-Year Treasury Rate&quot;) %&gt;%
+  summarise(Date = date,
+            Value = value / 100,
+            Maturity = maturity)
+
+yield_3m &lt;-
+  yield_curve %&gt;%
+  filter(duration == &quot;3-Month Treasury Bill&quot;) %&gt;%
+  summarise(Date = date,
+            Value = value / 100,
+            Maturity = maturity)
+
+yield_3m10y &lt;-
+  inner_join(yield_3m, yield_10y, by = &quot;Date&quot;) %&gt;%
+  transmute(Date = Date, delta = (Value.y - Value.x))
+
+ggplot() +
+  geom_rect(
+    data = recessions59up,
+    aes(xmin = From, xmax = To),
+    ymin = -Inf,
+    ymax = Inf,
+    alpha = 0.2
+  ) +
+  geom_line(data = yield_3m10y, aes(x = Date, y = delta * 100)) +
+  geom_area(data = yield_3m10y,
+            color = &quot;#5DADE2&quot;,
+            aes(x = (Date), y = ifelse(delta &lt; 0, delta * 100, 0)),
+            fill =
+              &quot;#F5B7B1&quot;) +
+  geom_area(data = yield_3m10y,
+            color = &quot;#7FB3D5&quot;,
+            aes(x = (Date), y = ifelse(delta &gt; 0, delta * 100, 0)),
+            fill =
+              &quot;#AED6F1&quot;) +
+  theme_bw() +
+  labs(
+    x = &quot;&quot;,
+    y = &quot;Difference (10 year-3 month) yield in %&quot;,
+    caption = &quot;Source: St.Louis Federal Reserve Economic Database (FRED)&quot;,
+    title = &quot;Yield Curve inversion: 10-year minus 3-month U.S. Treasury rates&quot;,
+    subtitle = &quot;Difference in % points monthly averages.\nShaded area corresponds to recessions&quot;
+  ) +
+  theme(plot.title = element_text(face = &quot;bold&quot;))+
+  scale_x_date(date_breaks = &quot;2 years&quot;, labels = date_format(&quot;%Y&quot;), limits = c(as.Date(&quot;1960-12-01&quot;), as.Date(&quot;2021-01-01&quot;)))</code></pre>
+<p><img src="/blogs/2021-10-20-inflation/yield_curve_files/figure-html/unnamed-chunk-1-1.png" width="1440" style="display: block; margin: auto;" /></p>
+<p>This may seem long but it should be easy to produce the following three plots</p>
+<div id="yields-on-us-rates-by-duration-since-1960" class="section level3">
+<h3>Yields on US rates by duration since 1960</h3>
+<p><img src="/Users/guidobassi/Desktop/website/images/yield_curve1.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>lev &lt;- c(&quot;3m&quot;, &quot;6m&quot;, &quot;1y&quot;, &quot;2y&quot;, &quot;3y&quot;, &quot;5y&quot;, &quot;7y&quot;, &quot;10y&quot;, &quot;20y&quot;)
+
+
+lev_duration &lt;- c(
+  &quot;3-Month Treasury Bill&quot;,
+  &quot;6-Month Treasury Bill&quot;,
+  &quot;1-Year Treasury Rate&quot;,
+  &quot;2-Year Treasury Rate&quot;,
+  &quot;3-Year Treasury Rate&quot;,
+  &quot;5-Year Treasury Rate&quot;,
+  &quot;7-Year Treasury Rate&quot;,
+  &quot;10-Year Treasury Rate&quot;,
+  &quot;20-Year Treasury Rate&quot;,
+  &quot;30-Year Treasury Rate&quot;
+)
+
+yield_curve_new &lt;- arrange(transform(yield_curve,
+                                     duration = factor(duration, levels = lev_duration)), duration)
+
+yield_curve_new %&gt;%
+  #mutate(maturity=factor(maturity,order=TRUE,levels=lev))%&gt;%
+  #arrange(date,maturity)%&gt;%
+  ggplot(aes(x = date, y = value, colour = duration)) +
+  geom_line() +
+  facet_wrap( ~ duration, nrow = 5) +
+  theme_bw() +
+  labs(
+    title = &quot;Yields on U.S. Treasury rates since 1960&quot;,
+    x = &quot;&quot;,
+    y = &quot;%&quot;,
+    caption = &quot;Source: St.Louis Federal Reserve Economic Database (FRED)&quot;
+  ) +
+  theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="/blogs/2021-10-20-inflation/yield_curve_files/figure-html/unnamed-chunk-2-1.png" width="1440" style="display: block; margin: auto;" /></p>
+</div>
+<div id="monthly-yields-on-us-rates-by-duration-since-1999-on-a-year-by-year-basis" class="section level3">
+<h3>Monthly yields on US rates by duration since 1999 on a year-by-year basis</h3>
+<p><img src="/Users/guidobassi/Desktop/website/images/yield_curve2.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>library(lubridate)
+
+lev &lt;-
+  c(&quot;3m&quot;, &quot;6m&quot;, &quot;1y&quot;, &quot;2y&quot;, &quot;3y&quot;, &quot;5y&quot;, &quot;7y&quot;, &quot;10y&quot;, &quot;20y&quot;, &quot;30y&quot;)
+
+yield_curve_new2 &lt;- arrange(transform(yield_curve,
+                                      maturity = factor(maturity, levels = lev)), maturity)
+
+yield_curve_new2 &lt;-
+  yield_curve_new2 %&gt;%
+  mutate(yield_curve_new2,
+         Month = month(date),
+         Year = year(date)) %&gt;%
+  arrange(Month, Year, maturity) %&gt;%
+  mutate(count = 1:length(Month))
+
+
+
+yield_curve_new2&lt;-drop_na(yield_curve_new2)
+
+
+yield_curve_new2 %&gt;%
+  filter(Year &gt;= 1999) %&gt;%
+  ggplot(aes(
+    x = maturity,
+    y = value,
+    color = as.factor(Year),
+    group = Month
+  )) +
+  geom_line() +
+  facet_wrap(~ year(date), nrow = 6) +
+  theme_bw() +
+  theme(legend.position = &quot;none&quot;) +
+  labs(
+    x = &quot;Maturity&quot;,
+    y = &quot;Yield (%)&quot;,
+    title = &quot;US Yield Curve&quot;,
+    caption = &quot;Source: St. Louis Federal Reserve Economic Database (FRED)&quot;
+  )</code></pre>
+<p><img src="/blogs/2021-10-20-inflation/yield_curve_files/figure-html/unnamed-chunk-3-1.png" width="1248" style="display: block; margin: auto;" /></p>
+</div>
+<div id="month-and-10-year-yields-since-1999" class="section level3">
+<h3>3-month and 10-year yields since 1999</h3>
+<p><img src="/Users/guidobassi/Desktop/website/images/yield_curve3.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>yield_3mAND10y &lt;-
+  inner_join(yield_3m, yield_10y, by = &quot;Date&quot;) %&gt;%
+  filter(year(Date) &gt;= 1999) %&gt;%
+  mutate(Value.x = Value.x * 100, Value.y = Value.y * 100)
+
+
+
+
+names(yield_3mAND10y)[c(2, 4)] = c(&quot;3-Month Treasury Bill&quot;, &quot;10-Year Treasury Rate&quot;)
+cols &lt;- c(&quot;#A2D9CE&quot;, &quot;#F1948A&quot;)
+
+yield_3mAND10y %&gt;%
+  gather(key = measure,
+         value = Rate,
+         c(&quot;3-Month Treasury Bill&quot;, &quot;10-Year Treasury Rate&quot;)) %&gt;%
+  ggplot(aes(
+    x = Date,
+    y = Rate,
+    group = measure,
+    colour = measure
+  )) +
+  geom_line(fill = cols) +
+  theme_bw() +
+  labs(
+    title = &quot;Yields on 3 months and 10 years U.S. treasury since 1999&quot;,
+    x = &quot;&quot;,
+    y = &quot;%&quot;,
+    caption = &quot;Source: St.Louis Federal Reserve Economic Database (FRED)&quot;,
+    color = &quot;&quot;
+  ) +
+  scale_color_manual(values = cols)</code></pre>
+<p><img src="/blogs/2021-10-20-inflation/yield_curve_files/figure-html/unnamed-chunk-4-1.png" width="1248" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+</div>

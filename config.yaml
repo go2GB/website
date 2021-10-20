@@ -91,16 +91,16 @@ params:
         url: blogs/career
       - image: bike.jpeg
         subtitle: Lorem Etiam Nullam
-        title: Magna
-        url: blogs/magna
+        title: Brexit Vote Analysis
+        url: blogs/brexit_vote
       - image: phy.jpeg
         subtitle: Nisl Sed Aliquam
         title: Ipsum
         url: blogs/ipsum
       - image: pic05.jpg
-        subtitle: Ipsum Dolor Sit Amet
-        title: Consequat
-        url: blogs/ipsum
+        subtitle: Data driven analysis of Brexit results
+        title: Yield Curve Inversion
+        url: blogs/yield_curve
       - image: pic06.jpg
         subtitle: Feugiat Amet Tempus
         title: Etiam

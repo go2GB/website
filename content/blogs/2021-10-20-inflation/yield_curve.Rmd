@@ -10,8 +10,8 @@ description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis mag
 draft: false
 image: pic08.jpg
 keywords: ""
-slug: inflation
-title: Inflation
+slug: yield_curve
+title: Yield Curve Inversion
 ---
 
 
@@ -258,19 +258,6 @@ yield_3mAND10y <-
   filter(year(Date) >= 1999) %>%
   mutate(Value.x = Value.x * 100, Value.y = Value.y * 100)
 
-#lgnd<-c("a","b")
-
-#yield_3mAND10y%>%
-#ggplot(aes(x=Date))+
-#  geom_line(aes(y=Value.x,colour="#A2D9CE",color="a"))+
-#  geom_line(aes(y=Value.y,colour="#F1948A",color="b"))+
-# theme_bw()+
-#   labs(
-#    title = "Yields on 3 months and 10 years U.S. treasury since 1999",
-#    x = "",
-#    y = "%",
-#   caption="Source: St.Louis Federal Reserve Economic Database (FRED)",
-#   color="Legend")
 
 
 

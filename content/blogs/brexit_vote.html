@@ -7,8 +7,8 @@ description: Lorem Etiam Nullam
 draft: false
 image: pic09.jpg
 keywords: ""
-slug: magna
-title: Magna
+slug: brexit_vote
+title: Brexit Vote Analysis
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
@@ -35,26 +35,26 @@ glimpse(brexit_results)</code></pre>
   select(born_in_uk, male, unemployed, degree, age_18to24, leave_share) %&gt;% 
   ggpairs(aes(alpha=0.2))+
   theme_bw()</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/load_brexit_data-1.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/load_brexit_data-1.png" width="672" /></p>
 <pre class="r"><code>brexit_results %&gt;% 
   select(con_2015, lab_2015,ld_2015,ukip_2015, leave_share) %&gt;% 
   ggpairs(aes(alpha=0.2))+
   theme_bw()</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/load_brexit_data-2.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/load_brexit_data-2.png" width="672" /></p>
 <pre class="r"><code>brexit_results %&gt;% 
   select(born_in_uk, male, unemployed, degree, age_18to24,con_2015, lab_2015,ld_2015,ukip_2015, leave_share) %&gt;% 
   ggpairs(aes(alpha=0.1))+
   theme_bw()</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/load_brexit_data-3.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/load_brexit_data-3.png" width="672" /></p>
 <p>The data comes from <a href="https://www.thecrosstab.com/">Elliott Morris</a>, who cleaned it and made it available through his <a href="https://www.datacamp.com/courses/analyzing-election-and-polling-data-in-r">DataCamp class on analysing election and polling data in R</a>.</p>
 <p>Our main outcome variable (or y) is <code>leave_share</code>, which is the percent of votes cast in favour of Brexit, or leaving the EU. Each row is a UK <a href="https://en.wikipedia.org/wiki/United_Kingdom_Parliament_constituencies">parliament constituency</a>.</p>
 <p>To get a sense of the spread of the data, plot a histogram and a density plot of the leave share in all constituencies.</p>
 <pre class="r"><code>ggplot(brexit_results, aes(x = leave_share)) +
   geom_histogram(binwidth = 2.5)</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/brexit_histogram-1.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/brexit_histogram-1.png" width="672" /></p>
 <pre class="r"><code>ggplot(brexit_results, aes(x = leave_share)) +
   geom_density()</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/brexit_histogram-2.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/brexit_histogram-2.png" width="672" /></p>
 <div id="leave-share-explained-by-immigration" class="section level2">
 <h2>Leave share explained by immigration</h2>
 <p>One common explanation for the Brexit outcome was fear of immigration and opposition to the EU’s more open border policy. We can check the relationship (or correlation) between the proportion of native born residents (<code>born_in_uk</code>) in a constituency and its <code>leave_share</code>. To do this, let us get the correlation between the two variables</p>
@@ -71,7 +71,7 @@ glimpse(brexit_results)</code></pre>
   geom_smooth(method = &quot;lm&quot;) +
   theme_bw()</code></pre>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/brexit_immigration_plot-1.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/brexit_immigration_plot-1.png" width="672" /></p>
 <p>A simple regression model estimates the slope, or the effect of immigrant populations on the share of leave votes:</p>
 <pre class="r"><code>brexit_leave_immigration &lt;- lm(leave_share ~ born_in_uk, data = brexit_results)
 
@@ -111,19 +111,19 @@ get_regression_table(brexit_leave_immigration)</code></pre>
   # rows where that&#39;s missing
   filter(!is.na(degree), !is.na(leave_share)) %&gt;% 
   ggpairs()</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/leave-education-cor-1.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/leave-education-cor-1.png" width="672" /></p>
 <p>The correlation between <code>leave_share</code> and <code>degree</code> is -0.9– this is massive! As the education level of a constituency goes up, the share of leave votes goes down. It’s very apparent in the scatterplot– all points are tightly clustered around the line:</p>
 <pre class="r"><code>ggplot(brexit_results, aes(x = degree, y = leave_share)) +
   geom_point(alpha=0.3) +
   geom_smooth(method = &quot;lm&quot;)</code></pre>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/leave-education-plot-1.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/leave-education-plot-1.png" width="672" /></p>
 <p>Age <code>age_18to24</code> and leave votes are moderately negatively correlated (r = -0.36). The relationship is negative, but the points aren’t that tightly clustered around the line. As x increases, constituencies are actually getting <em>younger</em>, since this is measuring the proportion of the county that is between 18 and 24. A greater proportion means more people in the 18-24 age group.</p>
 <pre class="r"><code>ggplot(brexit_results, aes(x = age_18to24, y = leave_share)) +
   geom_point(alpha=0.3) +
   geom_smooth(method = &quot;lm&quot;)</code></pre>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/leave-age-plot-1.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/leave-age-plot-1.png" width="672" /></p>
 <p>Let’s look at the effect of both of these on the leave share with a multiple regression model:</p>
 <pre class="r"><code>leave_educ_age &lt;- lm(leave_share ~ degree + age_18to24, data = brexit_results)
 
@@ -169,14 +169,14 @@ ggplot(brexit_parties, aes(x = party_pct, y = leave_share, colour = party)) +
   theme(legend.position = &quot;bottom&quot;)+
   theme(legend.title=element_blank())</code></pre>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/leave-party-plot-1.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/leave-party-plot-1.png" width="672" /></p>
 <p>The UKIP line is fairly impressive– there’s a very strong positive correlation– the more a constituency voted for UKIP in 2015, the more it voted to leave the EU in 2016.</p>
 <p>Let’s look at the model to get the slopes (or effects) for all parties</p>
 <pre class="r"><code># First a correlation scatterplot matrix
 brexit_results %&gt;% 
   select(con_2015, lab_2015, ld_2015, ukip_2015, leave_share) %&gt;% 
   ggpairs(aes(alpha = 0.2))</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/brexit-model-leave-party-1.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/brexit-model-leave-party-1.png" width="672" /></p>
 <pre class="r"><code>leave_politics &lt;- lm(leave_share ~ con_2015 + lab_2015 + ld_2015 + ukip_2015, 
                      data = brexit_results)
 
@@ -208,7 +208,7 @@ get_regression_table(leave_politics)</code></pre>
 brexit_results %&gt;% 
   select(con_2015, lab_2015, ld_2015, ukip_2015, degree, age_18to24, born_in_uk, male, unemployed, leave_share) %&gt;% 
   ggpairs(aes(alpha = 0.2))</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/brexit-model-leave-everything-1.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/brexit-model-leave-everything-1.png" width="672" /></p>
 <pre class="r"><code>leave_everything &lt;- lm(leave_share ~ con_2015 + lab_2015 + ld_2015 + ukip_2015 +
                          degree + age_18to24 + born_in_uk + male + unemployed, data = brexit_results)
 
@@ -356,7 +356,7 @@ ggplot(model_predictions, aes(x = degree, y = .fitted)) +
   labs(y = &quot;Predicted leave share&quot;, 
        x = &quot;Proportion of constituency with a university degree&quot;)+
   theme_bw()</code></pre>
-<p><img src="/blogs/brexit_vote_analysis_files/figure-html/plot-brexit-predict-1.png" width="672" /></p>
+<p><img src="/blogs/brexit_vote_files/figure-html/plot-brexit-predict-1.png" width="672" /></p>
 <div id="all-models-side-by-side" class="section level3">
 <h3>All models side-by-side</h3>
 <p>Like we did before, we can use <code>huxreg()</code> to view all these models side-by-side and compare the coefficients and the <span class="math inline">\(R^2\)</span> values:</p>
