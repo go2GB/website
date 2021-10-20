@@ -19,12 +19,14 @@ options("huxtable.knit_print_df" = FALSE)
 ```
 
 
-```{r load_packages, warning=FALSE, message=FALSE, echo=FALSE}
+```{r load_packages, warning=FALSE, message=FALSE, echo=FALSE,include=FALSE}
 library(tidyverse)
 library(moderndive)
 library(huxtable)
 library(here)
 library(broom)
+library(car)
+library(sos)
 
 
 # to create a scatterplot matrix
@@ -38,11 +40,6 @@ library(broom)
 library(car)
 ```
 
-The goal is to test your software installation, to demonstrate competency in Markdown, and in the basics of `ggplot`.
-
-# Brexit voting
-
-We will have a quick look at the results of the 2016 Brexit vote in the UK. First we read the data using `read_csv()` and have a quick glimpse at the data
 
 ```{r load_brexit_data, warning=FALSE, message=FALSE}
 brexit_results <- read_csv("/Users/guidobassi/Desktop/website/content/blogs/brexit_results.csv")
@@ -323,20 +320,7 @@ ggplot(model_predictions, aes(x = degree, y = .fitted)) +
   theme_bw()
 ```
 
-With one final tweak, we can add 95% confidence intervals to this line.
 
-```{r plot-brexit-predict-intervalse}
-model_predictions_with_intervals <- model_predictions %>% 
-  mutate(conf_low = .fitted + (1.96 * .se.fit),
-         conf_high = .fitted - (1.96 * .se.fit))
-
-ggplot(model_predictions_with_intervals, aes(x = degree, y = .fitted)) +
-  geom_ribbon(aes(ymin = conf_low, ymax = conf_high), alpha = 0.25) +
-  geom_line() +
-  labs(y = "Predicted leave share", 
-       x = "Proportion of constituency with a university degree")+
-  theme_bw()
-```
 
 ### All models side-by-side
 

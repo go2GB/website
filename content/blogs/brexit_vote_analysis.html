@@ -1,0 +1,419 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:09-05:00"
+description: Lorem Etiam Nullam
+draft: false
+image: pic09.jpg
+keywords: ""
+slug: magna
+title: Magna
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<pre class="r"><code>brexit_results &lt;- read_csv(&quot;/Users/guidobassi/Desktop/website/content/blogs/brexit_results.csv&quot;)
+
+
+glimpse(brexit_results)</code></pre>
+<pre><code>## Rows: 632
+## Columns: 11
+## $ Seat        &lt;chr&gt; &quot;Aldershot&quot;, &quot;Aldridge-Brownhills&quot;, &quot;Altrincham and Sale W…
+## $ con_2015    &lt;dbl&gt; 50.592, 52.050, 52.994, 43.979, 60.788, 22.418, 52.454, 22…
+## $ lab_2015    &lt;dbl&gt; 18.333, 22.369, 26.686, 34.781, 11.197, 41.022, 18.441, 49…
+## $ ld_2015     &lt;dbl&gt; 8.824, 3.367, 8.383, 2.975, 7.192, 14.828, 5.984, 2.423, 1…
+## $ ukip_2015   &lt;dbl&gt; 17.867, 19.624, 8.011, 15.887, 14.438, 21.409, 18.821, 21.…
+## $ leave_share &lt;dbl&gt; 57.89777, 67.79635, 38.58780, 65.29912, 49.70111, 70.47289…
+## $ born_in_uk  &lt;dbl&gt; 83.10464, 96.12207, 90.48566, 97.30437, 93.33793, 96.96214…
+## $ male        &lt;dbl&gt; 49.89896, 48.92951, 48.90621, 49.21657, 48.00189, 49.17185…
+## $ unemployed  &lt;dbl&gt; 3.637000, 4.553607, 3.039963, 4.261173, 2.468100, 4.742731…
+## $ degree      &lt;dbl&gt; 13.870661, 9.974114, 28.600135, 9.336294, 18.775591, 6.085…
+## $ age_18to24  &lt;dbl&gt; 9.406093, 7.325850, 6.437453, 7.747801, 5.734730, 8.209863…</code></pre>
+<pre class="r"><code>brexit_results %&gt;% 
+  select(born_in_uk, male, unemployed, degree, age_18to24, leave_share) %&gt;% 
+  ggpairs(aes(alpha=0.2))+
+  theme_bw()</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/load_brexit_data-1.png" width="672" /></p>
+<pre class="r"><code>brexit_results %&gt;% 
+  select(con_2015, lab_2015,ld_2015,ukip_2015, leave_share) %&gt;% 
+  ggpairs(aes(alpha=0.2))+
+  theme_bw()</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/load_brexit_data-2.png" width="672" /></p>
+<pre class="r"><code>brexit_results %&gt;% 
+  select(born_in_uk, male, unemployed, degree, age_18to24,con_2015, lab_2015,ld_2015,ukip_2015, leave_share) %&gt;% 
+  ggpairs(aes(alpha=0.1))+
+  theme_bw()</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/load_brexit_data-3.png" width="672" /></p>
+<p>The data comes from <a href="https://www.thecrosstab.com/">Elliott Morris</a>, who cleaned it and made it available through his <a href="https://www.datacamp.com/courses/analyzing-election-and-polling-data-in-r">DataCamp class on analysing election and polling data in R</a>.</p>
+<p>Our main outcome variable (or y) is <code>leave_share</code>, which is the percent of votes cast in favour of Brexit, or leaving the EU. Each row is a UK <a href="https://en.wikipedia.org/wiki/United_Kingdom_Parliament_constituencies">parliament constituency</a>.</p>
+<p>To get a sense of the spread of the data, plot a histogram and a density plot of the leave share in all constituencies.</p>
+<pre class="r"><code>ggplot(brexit_results, aes(x = leave_share)) +
+  geom_histogram(binwidth = 2.5)</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/brexit_histogram-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(brexit_results, aes(x = leave_share)) +
+  geom_density()</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/brexit_histogram-2.png" width="672" /></p>
+<div id="leave-share-explained-by-immigration" class="section level2">
+<h2>Leave share explained by immigration</h2>
+<p>One common explanation for the Brexit outcome was fear of immigration and opposition to the EU’s more open border policy. We can check the relationship (or correlation) between the proportion of native born residents (<code>born_in_uk</code>) in a constituency and its <code>leave_share</code>. To do this, let us get the correlation between the two variables</p>
+<pre class="r"><code>brexit_results %&gt;% 
+  select(leave_share, born_in_uk) %&gt;% 
+  cor()</code></pre>
+<pre><code>##             leave_share born_in_uk
+## leave_share   1.0000000  0.4934295
+## born_in_uk    0.4934295  1.0000000</code></pre>
+<p>The correlation is almost 0.5, which shows that the two variables are positively correlated.</p>
+<p>We can also create a scatterplot between these two variables using <code>geom_point</code>. We also add the best fit line, using <code>geom_smooth(method = "lm")</code>.</p>
+<pre class="r"><code>ggplot(brexit_results, aes(x = born_in_uk, y = leave_share)) +
+  geom_point(alpha=0.3) +
+  geom_smooth(method = &quot;lm&quot;) +
+  theme_bw()</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/brexit_immigration_plot-1.png" width="672" /></p>
+<p>A simple regression model estimates the slope, or the effect of immigrant populations on the share of leave votes:</p>
+<pre class="r"><code>brexit_leave_immigration &lt;- lm(leave_share ~ born_in_uk, data = brexit_results)
+
+get_regression_table(brexit_leave_immigration)</code></pre>
+<pre><code>## # A tibble: 2 × 7
+##   term       estimate std_error statistic p_value lower_ci upper_ci
+##   &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 intercept      7.98     3.12       2.56   0.011    1.85    14.1  
+## 2 born_in_uk     0.5      0.035     14.2    0        0.431    0.569</code></pre>
+<pre class="r"><code>get_regression_summaries(brexit_leave_immigration)</code></pre>
+<pre><code>## # A tibble: 1 × 9
+##   r_squared adj_r_squared   mse  rmse sigma statistic p_value    df  nobs
+##       &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     0.243         0.242  98.8  9.94  9.96      203.       0     1   632</code></pre>
+<pre class="r"><code>mosaic::msummary(brexit_leave_immigration)</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;mosaic&#39;:
+##   method                           from   
+##   fortify.SpatialPolygonsDataFrame ggplot2</code></pre>
+<pre><code>##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  7.97669    3.12104   2.556   0.0108 *  
+## born_in_uk   0.50005    0.03512  14.239   &lt;2e-16 ***
+## 
+## Residual standard error: 9.957 on 630 degrees of freedom
+## Multiple R-squared:  0.2435, Adjusted R-squared:  0.2423 
+## F-statistic: 202.8 on 1 and 630 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>The intercept shows what the average leave share would be in a constituency where 0% of the population was born in the UK. There is no such constituency, so we can ignore the intercept.</p>
+<p>The slope of born in the UK (<span class="math inline">\(\beta_1\)</span>) is 0.5, which means that a 1% increase in the proportion of native UK residents is associated with an increase in the leave vote share of 0.5, on average (e.g. moving from 50% leave to 50.5% leave).</p>
+<p>The <span class="math inline">\(R^2\)</span> (the simple one, since we only have one explanatory variable) shows that this model explains 24.3% of the variation in leave votes.</p>
+</div>
+<div id="leave-share-explained-by-education-and-age" class="section level2">
+<h2>Leave share explained by education and age</h2>
+<p>Another common explanation for the Brexit outcome is that it was driven by older people with less education. Let’s see if that checks out by using <code>degree</code> (which measures the percent of constituency’s population with a university degree) and <code>age_18to24</code> (which measures the percent of a constituency’s population between the ages of 18 and 24).</p>
+<p>First we can check the relationships on their own. First, the correlation:</p>
+<pre class="r"><code>brexit_results %&gt;% 
+  select(born_in_uk, degree, age_18to24, male, unemployed, leave_share) %&gt;% 
+  # Some of these constituencies have missing data about education, so we remove
+  # rows where that&#39;s missing
+  filter(!is.na(degree), !is.na(leave_share)) %&gt;% 
+  ggpairs()</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/leave-education-cor-1.png" width="672" /></p>
+<p>The correlation between <code>leave_share</code> and <code>degree</code> is -0.9– this is massive! As the education level of a constituency goes up, the share of leave votes goes down. It’s very apparent in the scatterplot– all points are tightly clustered around the line:</p>
+<pre class="r"><code>ggplot(brexit_results, aes(x = degree, y = leave_share)) +
+  geom_point(alpha=0.3) +
+  geom_smooth(method = &quot;lm&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/leave-education-plot-1.png" width="672" /></p>
+<p>Age <code>age_18to24</code> and leave votes are moderately negatively correlated (r = -0.36). The relationship is negative, but the points aren’t that tightly clustered around the line. As x increases, constituencies are actually getting <em>younger</em>, since this is measuring the proportion of the county that is between 18 and 24. A greater proportion means more people in the 18-24 age group.</p>
+<pre class="r"><code>ggplot(brexit_results, aes(x = age_18to24, y = leave_share)) +
+  geom_point(alpha=0.3) +
+  geom_smooth(method = &quot;lm&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/leave-age-plot-1.png" width="672" /></p>
+<p>Let’s look at the effect of both of these on the leave share with a multiple regression model:</p>
+<pre class="r"><code>leave_educ_age &lt;- lm(leave_share ~ degree + age_18to24, data = brexit_results)
+
+get_regression_table(leave_educ_age)</code></pre>
+<pre><code>## # A tibble: 3 × 7
+##   term       estimate std_error statistic p_value lower_ci upper_ci
+##   &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 intercept    76.5       0.558    137.         0   75.4     77.6  
+## 2 degree       -1.12      0.022    -50.8        0   -1.17    -1.08 
+## 3 age_18to24   -0.456     0.052     -8.85       0   -0.557   -0.355</code></pre>
+<pre class="r"><code>get_regression_summaries(leave_educ_age)</code></pre>
+<pre><code>## # A tibble: 1 × 9
+##   r_squared adj_r_squared   mse  rmse sigma statistic p_value    df  nobs
+##       &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     0.843         0.842  18.3  4.28  4.29     1528.       0     2   573</code></pre>
+<p>If we take the age of a constituency into account, a 1% increase in the proportion of the constituency with a university degree is associated with a 1.125 point drop in the share of leave votes (e.g. moving from 50% leave to 48.875% leave). Similarly, controlling for education, a 1% increase in the proportion of the constituency that is between 18 and 24 years old is associated with a 0.456 point drop in the share of leave vote (e.g. moving from 50% leave to 49.544%).</p>
+<p>Both age and education have a negative effect on leave votes– constituencies that are younger and more educated had on average far fewer leave votes</p>
+<p>This model explains 84.2% of the variation in leave votes– this is the value of the Adjusted R square <code>adj_r_squared</code></p>
+</div>
+<div id="leave-share-explained-by-political-party" class="section level2">
+<h2>Leave share explained by political party</h2>
+<p>One final common explanation for the Brexit outcome is the role that UKIP played (Nigel Farage’s party; a far-right, populist, anti-EU party). We can see the relationship between how strong of a presence UKIP has in a constituency (based on its vote share in the 2015 parliamentary elections) and leave share.</p>
+<p>Here we can see the relationship between Conservative votes <code>con_2015</code>, Labour votes <code>lab_2015</code>, Liberal Democrats votes <code>ld_2015</code>, and UKIP votes ukip_2015. To plot these political parties at the same time, we must use <code>gather()</code> to make a longer data frame with a column named <code>party</code> and a column named <code>party_pct</code>)</p>
+<pre class="r"><code>brexit_parties &lt;- brexit_results %&gt;% 
+  gather(party, party_pct, c(con_2015, lab_2015, ld_2015, ukip_2015))
+
+ggplot(brexit_parties, aes(x = party_pct, y = leave_share, colour = party)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = &quot;lm&quot;) + 
+  theme_bw()+
+  
+  # political party colours taken from  
+  # http://www.blog.richardallen.co.uk/uk-political-party-web-colours/
+  scale_colour_manual(name  =&quot;Political Party&quot;,
+                      breaks=c(&quot;con_2015&quot;, &quot;lab_2015&quot;, &quot;ld_2015&quot;, &quot;ukip_2015&quot;),
+                      labels=c(&quot;Conservative&quot;, &quot;Labour&quot;, &quot;Lib Dems&quot;, &quot;UKIP&quot;),
+                      values = c(&quot;#0087dc&quot;, &quot;#d50000&quot;, &quot;#FDBB30&quot;, &quot;#EFE600&quot;)) +
+  labs(
+    title= &quot;How political affiliation translated to Brexit Voting&quot;,
+    x = &quot;Party % in the UK 2015 general election&quot;,
+    y = &quot;Leave % in the 2016 Brexit referendum&quot;
+  ) +
+  theme(legend.position = &quot;bottom&quot;)+
+  theme(legend.title=element_blank())</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/leave-party-plot-1.png" width="672" /></p>
+<p>The UKIP line is fairly impressive– there’s a very strong positive correlation– the more a constituency voted for UKIP in 2015, the more it voted to leave the EU in 2016.</p>
+<p>Let’s look at the model to get the slopes (or effects) for all parties</p>
+<pre class="r"><code># First a correlation scatterplot matrix
+brexit_results %&gt;% 
+  select(con_2015, lab_2015, ld_2015, ukip_2015, leave_share) %&gt;% 
+  ggpairs(aes(alpha = 0.2))</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/brexit-model-leave-party-1.png" width="672" /></p>
+<pre class="r"><code>leave_politics &lt;- lm(leave_share ~ con_2015 + lab_2015 + ld_2015 + ukip_2015, 
+                     data = brexit_results)
+
+get_regression_table(leave_politics)</code></pre>
+<pre><code>## # A tibble: 5 × 7
+##   term      estimate std_error statistic p_value lower_ci upper_ci
+##   &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 intercept   36.7       1.56     23.5     0       33.6     39.8  
+## 2 con_2015    -0.018     0.021    -0.836   0.404   -0.06     0.024
+## 3 lab_2015    -0.07      0.023    -3.09    0.002   -0.114   -0.026
+## 4 ld_2015     -0.128     0.034    -3.72    0       -0.196   -0.061
+## 5 ukip_2015    1.47      0.039    37.6     0        1.40     1.55</code></pre>
+<pre class="r"><code>get_regression_summaries(leave_politics)</code></pre>
+<pre><code>## # A tibble: 1 × 9
+##   r_squared adj_r_squared   mse  rmse sigma statistic p_value    df  nobs
+##       &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     0.726         0.724  35.8  5.98  6.01      415.       0     4   632</code></pre>
+<p>If we adjust for a constituency’s Labour, LibDem, and UKIP votes, a 1% increase in the votes cast for the Conservative party in 2015 is associated with a 0.018 point decrease in the share of leave votes on, average (e.g. moving from 50% to 49.982%). If you look at the confidence interval for the slope (effect) of <code>con_2015</code>, it contains 0 so there, which is pretty much a sign that there’s no effect.</p>
+<p>If we adjust for a constituency’s Conservative, LibDem, and UKIP votes, a 1% increase in the votes cast for the Labour party in 2015 is associated with a 0.07 point drop in the share of leave votes, on average (e.g. moving from 50% to 49.93%). Labour constituencies were less likely to vote to leave, but only slightly; the confidence interval for the slope is [-0.114%, -0.026%]</p>
+<p>If we adjust for a constituency’s Conservative, Labour, and UKIP votes, a 1% increase in the votes cast for the LibDemsin 2015 is associated with a 0.128 point drop in the share of leave votes, on average (e.g. moving from 50% to 49.872%). LibDem constituencies were less likely among the three parties (Conservatives, Labour, LibsDems) to vote to leave; the confidence interval for the slope is [-0.196%, -0.061%]</p>
+<p>However, when it comes to the estimating the UKIP effect, after contrlling for the other 3 prties, a 1% increase in the votes cast for UKIP in 2015 is associated with a 1.472 point increase in the share of leave votes (e.g. moving from 50% to 51.472%), which is quite a sizable effect.</p>
+<p>This model explains 72.4% (adj_r_squared) of the variation in the share of leave votes, which is pretty good. Just knowing how much of a presence UKIP has in a constituency is a good predictor of how it voted in the Brexit referendum.</p>
+</div>
+<div id="leave-share-explained-by-all-variables" class="section level2">
+<h2>Leave share explained by all variables</h2>
+<p>So far we’ve looked at immigration, education, age, and political party as explanations of the Brexit vote. How do these explanations change when we account for all these factors at once?</p>
+<p>First, let’s run a big model:</p>
+<pre class="r"><code># First a correlation scatterplot matrix
+brexit_results %&gt;% 
+  select(con_2015, lab_2015, ld_2015, ukip_2015, degree, age_18to24, born_in_uk, male, unemployed, leave_share) %&gt;% 
+  ggpairs(aes(alpha = 0.2))</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/brexit-model-leave-everything-1.png" width="672" /></p>
+<pre class="r"><code>leave_everything &lt;- lm(leave_share ~ con_2015 + lab_2015 + ld_2015 + ukip_2015 +
+                         degree + age_18to24 + born_in_uk + male + unemployed, data = brexit_results)
+
+get_regression_table(leave_everything)</code></pre>
+<pre><code>## # A tibble: 10 × 7
+##    term       estimate std_error statistic p_value lower_ci upper_ci
+##    &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+##  1 intercept     6.09     11.2       0.545   0.586  -15.9     28.0  
+##  2 con_2015      0.237     0.023    10.4     0        0.192    0.281
+##  3 lab_2015      0.129     0.025     5.13    0        0.08     0.179
+##  4 ld_2015       0.133     0.028     4.76    0        0.078    0.188
+##  5 ukip_2015     0.787     0.043    18.5     0        0.703    0.871
+##  6 degree       -0.826     0.031   -26.9     0       -0.887   -0.766
+##  7 age_18to24   -0.26      0.048    -5.46    0       -0.353   -0.166
+##  8 born_in_uk   -0.007     0.021    -0.354   0.723   -0.048    0.033
+##  9 male          0.743     0.204     3.65    0        0.343    1.14 
+## 10 unemployed    0.449     0.189     2.38    0.018    0.078    0.82</code></pre>
+<pre class="r"><code>get_regression_summaries(leave_everything)</code></pre>
+<pre><code>## # A tibble: 1 × 9
+##   r_squared adj_r_squared   mse  rmse sigma statistic p_value    df  nobs
+##       &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1      0.92         0.919  9.31  3.05  3.08      721.       0     9   573</code></pre>
+<p>Any colinearity issues?</p>
+<pre class="r"><code>library(car)
+
+vif(leave_everything)</code></pre>
+<pre><code>##   con_2015   lab_2015    ld_2015  ukip_2015     degree age_18to24 born_in_uk 
+##   7.050112  10.847648   2.967263   3.402759   3.973118   1.764195   3.506365 
+##       male unemployed 
+##   1.514946   4.396018</code></pre>
+<pre class="r"><code>#labour VIF &gt; 10, so remove it and rerun
+leave_everything2 &lt;- lm(leave_share ~ con_2015 + ld_2015 + ukip_2015 +
+                         degree + age_18to24 + born_in_uk + male + unemployed, data = brexit_results)
+
+get_regression_table(leave_everything2)</code></pre>
+<pre><code>## # A tibble: 9 × 7
+##   term       estimate std_error statistic p_value lower_ci upper_ci
+##   &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 intercept    17.8      11.2       1.60    0.111   -4.13    39.8  
+## 2 con_2015      0.146     0.014    10.1     0        0.117    0.174
+## 3 ld_2015       0.026     0.019     1.37    0.171   -0.011    0.063
+## 4 ukip_2015     0.671     0.037    18.2     0        0.598    0.743
+## 5 degree       -0.841     0.031   -26.9     0       -0.903   -0.78 
+## 6 age_18to24   -0.262     0.049    -5.39    0       -0.358   -0.166
+## 7 born_in_uk   -0.015     0.021    -0.695   0.488   -0.056    0.027
+## 8 male          0.704     0.208     3.38    0.001    0.295    1.11 
+## 9 unemployed    0.775     0.182     4.26    0        0.418    1.13</code></pre>
+<pre class="r"><code>get_regression_summaries(leave_everything2)</code></pre>
+<pre><code>## # A tibble: 1 × 9
+##   r_squared adj_r_squared   mse  rmse sigma statistic p_value    df  nobs
+##       &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     0.916         0.915  9.75  3.12  3.15      773.       0     8   573</code></pre>
+<pre class="r"><code>vif(leave_everything2)</code></pre>
+<pre><code>##   con_2015    ld_2015  ukip_2015     degree age_18to24 born_in_uk       male 
+##   2.718999   1.318469   2.444450   3.938543   1.764052   3.489675   1.512837 
+## unemployed 
+##   3.898942</code></pre>
+<p>Drop insignificant?
+<code>ld_2015</code> and <code>born_in_uk</code> are not significant, so exclude and rerun</p>
+<pre class="r"><code>library(car)
+
+vif(leave_everything)</code></pre>
+<pre><code>##   con_2015   lab_2015    ld_2015  ukip_2015     degree age_18to24 born_in_uk 
+##   7.050112  10.847648   2.967263   3.402759   3.973118   1.764195   3.506365 
+##       male unemployed 
+##   1.514946   4.396018</code></pre>
+<pre class="r"><code>#labour VIF &gt; 10, so remove it and rerun
+final_model &lt;- lm(leave_share ~ con_2015 +  ukip_2015 +
+                         degree + age_18to24 +  male + unemployed, data = brexit_results)
+mosaic::msummary(final_model)</code></pre>
+<pre><code>##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 16.13245    9.60615   1.679 0.093628 .  
+## con_2015     0.14293    0.01361  10.504  &lt; 2e-16 ***
+## ukip_2015    0.66081    0.03633  18.188  &lt; 2e-16 ***
+## degree      -0.82714    0.02487 -33.263  &lt; 2e-16 ***
+## age_18to24  -0.26090    0.04861  -5.367 1.17e-07 ***
+## male         0.71777    0.19925   3.602 0.000343 ***
+## unemployed   0.76729    0.13512   5.678 2.17e-08 ***
+## 
+## Residual standard error: 3.148 on 566 degrees of freedom
+##   (59 observations deleted due to missingness)
+## Multiple R-squared:  0.9161, Adjusted R-squared:  0.9152 
+## F-statistic:  1030 on 6 and 566 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>get_regression_table(final_model)</code></pre>
+<pre><code>## # A tibble: 7 × 7
+##   term       estimate std_error statistic p_value lower_ci upper_ci
+##   &lt;chr&gt;         &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 intercept    16.1       9.61       1.68   0.094   -2.74    35.0  
+## 2 con_2015      0.143     0.014     10.5    0        0.116    0.17 
+## 3 ukip_2015     0.661     0.036     18.2    0        0.589    0.732
+## 4 degree       -0.827     0.025    -33.3    0       -0.876   -0.778
+## 5 age_18to24   -0.261     0.049     -5.37   0       -0.356   -0.165
+## 6 male          0.718     0.199      3.60   0        0.326    1.11 
+## 7 unemployed    0.767     0.135      5.68   0        0.502    1.03</code></pre>
+<pre class="r"><code>get_regression_summaries(final_model)</code></pre>
+<pre><code>## # A tibble: 1 × 9
+##   r_squared adj_r_squared   mse  rmse sigma statistic p_value    df  nobs
+##       &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1     0.916         0.915  9.79  3.13  3.15     1030.       0     6   573</code></pre>
+<pre class="r"><code>vif(final_model)</code></pre>
+<pre><code>##   con_2015  ukip_2015     degree age_18to24       male unemployed 
+##   2.423751   2.363391   2.491252   1.761256   1.383463   2.148780</code></pre>
+<pre class="r"><code># Here are six imaginary constituencies, all with the same variables except
+# education, which goes up by five in each row
+imaginary_constituency3 &lt;- tibble(con_2015 = 35,
+                                      lab_2015 = 40,
+                                      ld_2015 = 6,
+                                      ukip_2015 = 15,
+                                      degree = c(5, 10, 15, 20, 25, 30),
+                                      age_18to24 = 30,
+                                      born_in_uk = 80,
+                                      male = 50,
+                                      unemployed = 6)
+# When we plug this multi-row data frame into predict(), it&#39;ll generate a
+# prediction for each row
+predict(final_model, newdata = imaginary_constituency3, interval = &quot;prediction&quot;)</code></pre>
+<pre><code>##        fit      lwr      upr
+## 1 59.57640 53.06736 66.08544
+## 2 55.44072 48.95644 61.92500
+## 3 51.30504 44.83638 57.77370
+## 4 47.16936 40.70713 53.63159
+## 5 43.03368 36.56865 49.49871
+## 6 38.89800 32.42096 45.37504</code></pre>
+<pre class="r"><code># We can also use broom::augment(). It&#39;s  essentially the same thing as predict(), 
+# but it adds the predictions and confidence intervals to the imaginary constituency 
+model_predictions &lt;- broom::augment(final_model, 
+                             newdata = imaginary_constituency3)
+
+# Now we have two new columns named .fitted and .se.fit: .fitted is the
+# predicted value and .se.fit is the standard error of the predicted value
+model_predictions</code></pre>
+<pre><code>## # A tibble: 6 × 10
+##   con_2015 lab_2015 ld_2015 ukip_2015 degree age_18to24 born_in_uk  male
+##      &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt; &lt;dbl&gt;
+## 1       35       40       6        15      5         30         80    50
+## 2       35       40       6        15     10         30         80    50
+## 3       35       40       6        15     15         30         80    50
+## 4       35       40       6        15     20         30         80    50
+## 5       35       40       6        15     25         30         80    50
+## 6       35       40       6        15     30         30         80    50
+## # … with 2 more variables: unemployed &lt;dbl&gt;, .fitted &lt;dbl&gt;</code></pre>
+<pre class="r"><code># We can plot this now:
+ggplot(model_predictions, aes(x = degree, y = .fitted)) +
+  geom_line() +
+  labs(y = &quot;Predicted leave share&quot;, 
+       x = &quot;Proportion of constituency with a university degree&quot;)+
+  theme_bw()</code></pre>
+<p><img src="/blogs/brexit_vote_analysis_files/figure-html/plot-brexit-predict-1.png" width="672" /></p>
+<div id="all-models-side-by-side" class="section level3">
+<h3>All models side-by-side</h3>
+<p>Like we did before, we can use <code>huxreg()</code> to view all these models side-by-side and compare the coefficients and the <span class="math inline">\(R^2\)</span> values:</p>
+<pre class="r"><code>huxreg(brexit_leave_immigration, leave_educ_age, 
+       leave_politics, leave_everything, leave_everything2, final_model) </code></pre>
+<table class="huxtable" style="border-collapse: collapse; border: 0px; margin-bottom: 2em; margin-top: 2em; ; margin-left: auto; margin-right: auto;  " id="tab:hux-brexit-real">
+<caption style="caption-side: top; text-align: center;">Comparison of models</caption><col><col><col><col><col><col><tr>
+<th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(1)</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(2)</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(3)</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(4)</th><th style="vertical-align: top; text-align: center; white-space: normal; border-style: solid solid solid solid; border-width: 0.8pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(5)</th></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(Intercept)</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">7.977&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">76.510&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">36.685&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">6.091&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">16.132&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(3.121)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.558)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(1.562)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(11.174)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(9.606)</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">born_in_uk</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">0.500&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">-0.007&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.035)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(0.021)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">degree</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">-1.125&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">-0.826&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">-0.827&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.022)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.031)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.025)</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">age_18to24</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">-0.456&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">-0.260&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">-0.261&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.052)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.048)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.049)</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">con_2015</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">-0.018&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">0.237&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">0.143&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">(0.021)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.023)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.014)</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">lab_2015</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">-0.070&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">0.129&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.023)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.025)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">ld_2015</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">-0.128&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">0.133&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.034)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.028)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">ukip_2015</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">1.472&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">0.787&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">0.661&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.039)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.043)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.036)</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">male</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">0.743&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">0.718&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.204)</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.199)</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">unemployed</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">0.449&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: bold;">0.767&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;"></th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.189)</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.4pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: bold;">(0.135)</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">#observations</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">632&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">573&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">632&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">573&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0.4pt 0pt 0pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">573&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">R squared</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.243&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.843&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.726&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.920&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.916&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Adj. R Squared</th><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.242&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.842&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.724&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.919&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; padding: 6pt 6pt 6pt 6pt; font-weight: normal;">0.915&nbsp;</td></tr>
+<tr>
+<th style="vertical-align: top; text-align: left; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">Residual SE</th><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">9.957&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">4.294&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">6.008&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">3.079&nbsp;</td><td style="vertical-align: top; text-align: right; white-space: normal; border-style: solid solid solid solid; border-width: 0pt 0pt 0.8pt 0pt;    padding: 6pt 6pt 6pt 6pt; font-weight: normal;">3.148&nbsp;</td></tr>
+</table>
+
+</div>
+</div>
