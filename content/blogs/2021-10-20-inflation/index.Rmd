@@ -1,17 +1,14 @@
 ---
-title: Inflation
-author: Package Build
-cover: ![](images/images.jpeg)
-date: '2021-10-20'
-slug: []
 categories:
-  - Index
-  - ''
-tags: []
-description: ''
-image: ''
-keywords: ''
-draft: no
+- ""
+- ""
+date: "2017-10-31T21:28:43-05:00"
+description: ""
+draft: false
+image: pic10.jpg
+keywords: ""
+slug: ipsum
+title: Ipsum
 ---
 
 
@@ -58,7 +55,7 @@ In our case we will look at US data and use the [FRED database](https://fred.stl
 
 ```{r download_historical_yield_curve, warning=FALSE, include=FALSE}
 
-yield_curve <- read_csv("/Users/guidobassi/Desktop/website/content/post/2021-10-20-inflation/yield_curve.csv")
+yield_curve <- read_csv("/Users/guidobassi/Desktop/website/content/blogs/2021-10-20-inflation/yield_curve.csv")
 
 
 ```
