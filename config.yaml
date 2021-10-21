@@ -8,7 +8,7 @@ params:
   banner:
     buttonText: Let's meet!
     subtitle:
-    title: Hi, my name is Guido
+    title: 
   blog: {}
   contact:
     address:
