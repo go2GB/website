@@ -8,7 +8,7 @@ params:
   banner:
     buttonText: Let's meet!
    # subtitle:
-    #title: 
+    title: Hi, you are very much welcome to naviagate my website
   blog: {}
   contact:
     address:
