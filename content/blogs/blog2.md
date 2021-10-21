@@ -12,4 +12,10 @@ title: Projects
 ---
 
 
-<iframe src="https://g272314.shinyapps.io/capm_flexdashboard_copy/"></iframe>
+<center>
+    <div>
+        <iframe style="width: 100%; height: 710px; overflow: auto;" src="https://g272314.shinyapps.io/capm_flexdashboard_copy/" frameborder="0" width="320" height="240">
+        </iframe>
+    </div>
+</center>
+
