@@ -67,8 +67,8 @@ params:
     links:
       - name: Home
         url: '#'
-     # - name: Blogs
-      #  url: blogs
+      - name: Blogs
+       url: blogs
       - name: Capm 
         url: capm.html
       - name: My Matlab collection
