@@ -7,9 +7,7 @@ disqusShortname: ''
 params:
   banner:
     buttonText: Let's meet!
-    subtitle: |-
-      A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP
-      AND RELEASED UNDER THE CREATIVE COMMONS.
+    subtitle:
     title: Hi, my name is Guido
   blog: {}
   contact:
