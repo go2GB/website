@@ -3,7 +3,7 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:26:09-05:00"
-description: Lorem Etiam Nullam
+description: Inflation is a complex topic. The pandemic has certainly contributed to increase it due to the base effect. At the same time the sock of demand for certain industries was followed by a shock in supply. With the reopening the supply side of the economy wasn't ready to satisfy this large partially unexpected demand. It is not a coincidence that industries correlated with the pandemic have been experiencing an increase in prices. On the other hand, problems in the supply chain in Asia as well as a booming housing market and rising wages are inflationary forces that could transform this temporary inflation in stationary. The following analysis tries to look at the data to understand what has happened recently.
 draft: false
 image: sup.jpg
 keywords: ""
@@ -34,13 +34,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 We will be following these steps:
 
-1.  You can find [CPI components at FRED](https://fredaccount.stlouisfed.org/public/datalist/843). You should adapt the code from German polls to scrape the FRED website and pull all of the CPI components into a vector. FIY, the list of components is the second table in that webpage.
-2.  Once you have a vector of components, you can then pass it to `tidyquant::tq_get(get = "economic.data", from =  "2000-01-01")` to get all data since January 1, 2000
-3.  Since the data you download is an index with various starting dates, you need to calculate the yearly, or 12-month change. To do this you need to use the `lag` function, and specifically, `year_change = value/lag(value, 12) - 1`; this means you are comparing the current month's value with that 12 months ago lag(value, 12).
-4.  I want you to order components so the higher the yearly change, the earlier does that component appear.
-5.  You should also make sure that the **All Items** CPI (CPIAUCSL) appears first.
-6.  Add a `geom_smooth()` for each component to get a sense of the overall trend. 1 You may want to colour the points according to whether yearly change was positive or negative.
-
+1.  We can find [CPI components at FRED](https://fredaccount.stlouisfed.org/public/datalist/843). 
+2.  Once we have a vector of components, we can then pass it to `tidyquant::tq_get(get = "economic.data", from =  "2000-01-01")` to get all data since January 1, 2000
+3.  The data that we download are an index with various starting dates, so we need to calculate the yearly, or 12-month change. To do this we need to use the `lag` function, and specifically, `year_change = value/lag(value, 12) - 1`; this means we are comparing the current month's value with that 12 months ago lag(value, 12).
 
 
 ```{r, fig.width=20, fig.height=10,warning=FALSE}
@@ -115,10 +111,9 @@ ggplot(data_2 %>% filter(year(date) >= 2016), aes(date, yoy_change)) +
       plot.caption = element_text(size = 10))
 ```
 
-This graphs is fine, but perhaps has too many sub-categories. You can find the [relative importance of components in the Consumer Price Indexes: U.S. city average, December 2020](https://www.bls.gov/cpi/tables/relative-importance/2020.htm) here. Can you choose a smaller subset of the components you have and only list the major categories (Housing, Transportation, Food and beverages, Medical care, Education and communication, Recreation, and Apparel), sorted according to their relative importance?
+This graphs is fine, but perhaps has too many sub-categories. We can find the [relative importance of components in the Consumer Price Indexes: U.S. city average, December 2020](https://www.bls.gov/cpi/tables/relative-importance/2020.htm) here. We can choose a smaller subset of the components that have and only list the major categories.
 
-
-**Interestingly, we see how inflation is driven by certain categories of products such as used cars, gasoline or motor fuel which are very much correlated with industries that suffered the most during the pandemic and so picked up quite substantially thereafter.**
+Interestingly, we see how inflation is driven by certain categories of products such as used cars, gasoline or motor fuel which are very much correlated with industries that suffered the most during the pandemic and so picked up quite substantially thereafter.
 
 ```{r}
 url_new <- "https://www.bls.gov/cpi/tables/relative-importance/2020.htm"
