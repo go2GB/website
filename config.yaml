@@ -21,7 +21,7 @@ params:
     email:
       - email: gbassi.mfa2022@london.edu
         title: Email
-    enable: yes
+    enable: no
    # phone:
       #- phone: (000) 000-0000 x1234
        # title: Phone
