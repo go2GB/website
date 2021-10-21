@@ -69,6 +69,8 @@ params:
         url: '#'
      # - name: Blogs
       #  url: blogs
+      - name: Capm 
+        url: capm.html
       - name: My Matlab collection
         url: Matlab_project.html
       - name: dissertation
