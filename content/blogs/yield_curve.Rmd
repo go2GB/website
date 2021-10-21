@@ -3,10 +3,7 @@ categories:
 - ""
 - ""
 date: "2017-10-31T22:26:13-05:00"
-description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna
-  sed nunc rhoncus condimentum sem. In efficitur ligula tate urna. Maecenas massa
-  sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem
-  consequat tincidunt. Vivamus et sagittis tempus.
+description: Does yield curve inversion imply recession? This has been a very debated topic that has always attracted the attention of many observers since probably it's connected to the illusion of us human of being able to predict the future. I looked at the data to see how this idea is close to reality.
 draft: false
 image: yield1.jpg
 keywords: ""
@@ -198,9 +195,6 @@ yield_curve_new %>%
 
 ### Monthly yields on US rates by duration since 1999 on a year-by-year basis
 
-```{r yield_curve_2, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "yield_curve2.png"), error = FALSE)
-```
 
 ```{r, fig.width = 13, fig.height=10}
 library(lubridate)
