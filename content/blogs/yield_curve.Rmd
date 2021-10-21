@@ -154,9 +154,7 @@ This may seem long but it should be easy to produce the following three plots
 
 ### Yields on US rates by duration since 1960
 
-```{r yield_curve_1, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "yield_curve1.png"), error = FALSE)
-```
+
 
 ```{r, fig.width=15, fig.height=10}
 
