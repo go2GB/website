@@ -7,8 +7,8 @@ disqusShortname: ''
 params:
   banner:
     buttonText: Let's meet!
-   # subtitle:
-    title: Hi, you are very much welcome to naviagate my website
+    subtitle: 
+    title: Hi, you are very much welcome to navigate my website
   blog: {}
   contact:
     address:
@@ -65,7 +65,7 @@ params:
       - name: Home
         url: '#'
       - name: Blogs
-       url: blogs
+        url: blogs
       - name: My Matlab collection
         url: Matlab_project.html
       - name: dissertation
