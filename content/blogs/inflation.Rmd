@@ -43,7 +43,7 @@ We will be following these steps:
 
 
 
-```{r, fig.width=20, fig.height=10}
+```{r, fig.width=20, fig.height=10,warning=FALSE}
 
 url <- "https://fredaccount.stlouisfed.org/public/datalist/843"
 webpage <- read_html(url)
