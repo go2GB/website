@@ -28,8 +28,6 @@ title: Is inflation here to stay?
 <li>You should also make sure that the <strong>All Items</strong> CPI (CPIAUCSL) appears first.</li>
 <li>Add a <code>geom_smooth()</code> for each component to get a sense of the overall trend. 1 You may want to colour the points according to whether yearly change was positive or negative.</li>
 </ol>
-<p>Having done this, you should get this graph.</p>
-<p><img src="/Users/guidobassi/Desktop/website/images/cpi_components_since_2016.png" width="100%" /></p>
 <pre class="r"><code>url &lt;- &quot;https://fredaccount.stlouisfed.org/public/datalist/843&quot;
 webpage &lt;- read_html(url)
 tr &lt;- html_nodes(webpage, &#39;tr&#39;)

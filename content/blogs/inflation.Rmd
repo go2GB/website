@@ -41,11 +41,6 @@ We will be following these steps:
 5.  You should also make sure that the **All Items** CPI (CPIAUCSL) appears first.
 6.  Add a `geom_smooth()` for each component to get a sense of the overall trend. 1 You may want to colour the points according to whether yearly change was positive or negative.
 
-Having done this, you should get this graph.
-
-```{r cpi_all_components_since_2016, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "cpi_components_since_2016.png"), error = FALSE)
-```
 
 
 ```{r, fig.width=20, fig.height=10}
