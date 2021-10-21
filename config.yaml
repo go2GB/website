@@ -6,7 +6,7 @@ googleAnalytics: ''
 disqusShortname: ''
 params:
   banner:
-    buttonText: Get Started
+    buttonText: Let's meet!
     subtitle: |-
       A RESPONSIVE SITE TEMPLATE DESIGNED BY HTML5 UP
       AND RELEASED UNDER THE CREATIVE COMMONS.
@@ -61,7 +61,7 @@ params:
   name: Guido
   navigation:
     button1:
-      - name: Get Started
+      - name: Let's meet!
         url: blogs
     button2:
       - name: Log In
@@ -71,10 +71,10 @@ params:
         url: '#'
       - name: Blogs
         url: blogs
-      - name: Generic Blog
-        url: blogs/slug
-      - name: Elements
-        url: elements.html
+     # - name: Generic Blog
+     #   url: blogs/slug
+     # - name: Elements
+    #    url: elements.html
     menu: Menu
     #subtitle: By HTML5 Up
     #title: Forty
@@ -83,8 +83,8 @@ params:
     showcase:
       - image: me.jpg
         subtitle: 
-        title: Oligopoli
-        url: blogs/oligopoli
+        title: About
+        url: blogs/about
       - image: lnda.gif
         subtitle: 
         title: Career
@@ -95,8 +95,8 @@ params:
         url: blogs/brexit_vote
       - image: phy.jpeg
         subtitle: 
-        title: Ipsum
-        url: blogs/ipsum
+        title: Projects
+        url: blogs/projects
       - image: pic05.jpg
         subtitle: 
         title: Yield Curve Inversion
