@@ -96,7 +96,7 @@ params:
       - image: phy.jpeg
         subtitle: 
         title: Projects
-        url: blogs/projects
+        url: blogs/Projects
       - image: pic05.jpg
         subtitle: 
         title: Yield Curve Inversion
