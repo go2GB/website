@@ -67,8 +67,8 @@ params:
     links:
       - name: Home
         url: '#'
-      - name: Blogs
-        url: blogs
+     # - name: Blogs
+      #  url: blogs
       - name: My Matlab collection
         url: Matlab_project.html
       - name: dissertation
@@ -110,15 +110,11 @@ params:
   two:
     buttonText: Explore
     enable: yes
-    subtitle: "Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero.
-      \n    Mauris aliquet magna magna sed nunc rhoncus pharetra. \n    Pellentesque
-      condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia
-      pellentesque lorem ipsum dolor. \n    Nullam et orci eu lorem consequat tincidunt.
-      Vivamus et sagittis libero.\n    Mauris aliquet magna magna sed nunc rhoncus
-      amet pharetra et feugiat tempus."
-    title: Massa libero
+    subtitle: "An indivudal who is used to acting in one way never changes;
+     \n   they must come to ruin when the times, in changing, no longer are in harmony
+           with their ways. \n -Machiavelli Niccolo, The Prince"
+    title: My favourite quote
     url: blogs
-
 markup:
   goldmark:
     renderer:
