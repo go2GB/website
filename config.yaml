@@ -75,6 +75,8 @@ params:
      #   url: blogs/slug
      # - name: Elements
     #    url: elements.html
+       - name: duration
+        url: duration.html
     menu: Menu
     #subtitle: By HTML5 Up
     #title: Forty
