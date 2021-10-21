@@ -99,7 +99,7 @@ params:
         subtitle: 
         title: Projects
         url: blogs/projects
-      - image: pic05.jpg
+      - image: cov.jpg
         subtitle: 
         title: Yield Curve Inversion
         url: blogs/yield_curve
