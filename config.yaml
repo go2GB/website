@@ -83,8 +83,8 @@ params:
     showcase:
       - image: me.jpg
         subtitle: 
-        title: About
-        url: blogs/about
+        title: Oligopoli
+        url: blogs/oligopoli
       - image: lnda.gif
         subtitle: 
         title: Career
