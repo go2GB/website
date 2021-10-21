@@ -1,6 +1,6 @@
 baseURL: https://guido-bassi.netlify.app/
 languageCode: en-us
-title: 
+title: Home
 theme: forty
 googleAnalytics: ''
 disqusShortname: ''
@@ -71,13 +71,13 @@ params:
         url: '#'
       - name: Blogs
         url: blogs
-      - name: Generic Blog
-        url: blogs/slug
-      - name: Elements
-        url: elements.html
+     # - name: Generic Blog
+      #  url: blogs/slug
+     # - name: Elements
+      #  url: elements.html
     menu: Menu
-    subtitle: By HTML5 Up
-    title: Forty
+    #subtitle: By HTML5 Up
+    #title: Forty
   tiles:
     enable: yes
     showcase:
