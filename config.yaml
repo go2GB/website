@@ -61,9 +61,6 @@ params:
     button1:
       - name: Let's meet!
         url: blogs
-   # button2:
-    #  - name: Log In
-     #   url: '#'
     links:
       - name: Home
         url: '#'
@@ -79,6 +76,9 @@ params:
      #   url: blogs/slug
      # - name: Elements
     #    url: elements.html
+    # button2:
+    #  - name: Log In
+     #   url: '#'
     menu: Menu
     #subtitle: By HTML5 Up
     #title: Forty
