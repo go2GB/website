@@ -147,11 +147,9 @@ ggplot() +
              
 ```
 
-This may seem long but it should be easy to produce the following three plots
+
 
 ### Yields on US rates by duration since 1960
-
-
 
 ```{r, fig.width=15, fig.height=10}
 
@@ -193,8 +191,8 @@ yield_curve_new %>%
 
 ```
 
-### Monthly yields on US rates by duration since 1999 on a year-by-year basis
 
+### Monthly yields on US rates by duration since 1999 on a year-by-year basis
 
 ```{r, fig.width = 13, fig.height=10}
 library(lubridate)
@@ -238,11 +236,8 @@ yield_curve_new2 %>%
   )
 ```
 
-### 3-month and 10-year yields since 1999
 
-```{r yield_curve_3, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "yield_curve3.png"), error = FALSE)
-```
+### 3-month and 10-year yields since 1999
 
 ```{r, fig.width=13,fig.height=10}
 yield_3mAND10y <-
