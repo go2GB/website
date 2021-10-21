@@ -7,8 +7,8 @@ disqusShortname: ''
 params:
   banner:
     buttonText: Let's meet!
-    subtitle:
-    title: 
+   # subtitle:
+    #title: 
   blog: {}
   contact:
     address:
@@ -21,10 +21,10 @@ params:
     email:
       - email: gbassi.mfa2022@london.edu
         title: Email
-    enable: no
-   # phone:
-      #- phone: (000) 000-0000 x1234
-       # title: Phone
+    enable: yes
+    phone:
+      - phone: (000) 000-0000 000
+        title: Phone
   custom_css: []
   custom_js: []
   description: Your description
@@ -71,6 +71,8 @@ params:
         url: blogs
       - name: duration
         url: duration.html
+      - name: dissertation
+        url: https://drive.google.com/file/d/1FrjPJYf2LlayDJVR-646x68ViSiaCzAZ/view?usp=sharing
      # - name: Generic Blog
      #   url: blogs/slug
      # - name: Elements
@@ -106,7 +108,7 @@ params:
         title: Is inflation here to stay?
         url: blogs/inflation
   two:
-    buttonText: Get Started
+    buttonText: Explore
     enable: yes
     subtitle: "Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero.
       \n    Mauris aliquet magna magna sed nunc rhoncus pharetra. \n    Pellentesque
